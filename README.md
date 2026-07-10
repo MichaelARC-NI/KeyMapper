@@ -6,10 +6,10 @@
 
 - **Mapeo de teclado** completo con dialogo de configuracion
 - **Control de ratón** con sensibilidad ajustable
+- **App Objetivo**: Selecciona una app para que el mapeo solo funcione en esa app (ideal para jugar)
 - **3 modos de inyección**: Root, Shizuku, ADB inalambrico
 - **Conexion ADB inalambrica** con dialogo de emparejamiento (IP + Puerto + Codigo)
-- **Deteccion automatica** de dispositivos en `/proc/bus/input/devices`
-- **Scroll del ratón** como scroll de pantalla
+- **Deteccion automatica** de dispositivos
 - **UI optimizada** para pantallas grandes
 
 ## Requisitos
@@ -18,28 +18,23 @@
 
 ## Instalación
 
-### Via ADB
 ```bash
 adb install -r -t --bypass-low-target-sdk-block keymapper.apk
 ```
 
-### Configuracion ADB Inalambrica
-1. Abre Ajustes > Desarrollador > Depuracion inalambrica
-2. Empareja el dispositivo con codigo de 6 digitos
-3. Abre KeyMapper > Selecciona "Depuracion Inalambrica"
-4. Toca "Configurar Conexion ADB..."
-5. Ingresa IP y Puerto de conexion
-6. Toca CONECTAR
+## App Objetivo (para jugar)
 
-## Mapeo de Teclas por Defecto
+1. Toca "Seleccionar" en la seccion [X] App Objetivo
+2. Elige el juego o app donde quieres usar teclado/raton
+3. El mapeo SOLO funcionara cuando esa app este en primer plano
+4. Toca "Limpiar" para volver a mapear en todas las apps
 
-| Tecla Fuente | Accion |
-|-------------|--------|
-| F5 / Home | Home |
-| Backspace / Escape | Back |
-| Page Up / Page Down | Vol+ / Vol- |
-| Tab / Enter | Tab / Enter |
-| F1 / F2 / F3 | Home / Back / Recent |
+## Configuracion ADB Inalambrica
+
+1. Ajustes > Desarrollador > Depuracion inalambrica > Emparejar
+2. Abre KeyMapper > Configurar Conexion ADB
+3. Ingresa IP, Puerto y Codigo de emparejamiento
+4. Toca EMPREJAR, luego CONECTAR
 
 ## Redes Sociales
 

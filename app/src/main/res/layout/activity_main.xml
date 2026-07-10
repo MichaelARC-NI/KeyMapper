@@ -120,6 +120,61 @@
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp" />
 
+        
+        <!-- === Seleccion de App Objetivo === -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#CCCCCC"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="[X] App Objetivo (para jugar)"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#333333" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvSelectedApp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Todas las apps"
+                android:textSize="13sp"
+                android:textColor="#757575"
+                android:drawablePadding="6dp"
+                android:singleLine="true"
+                android:ellipsize="end" />
+
+            <Button
+                android:id="@+id/btnSelectApp"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Seleccionar"
+                android:textSize="12sp"
+                android:layout_marginStart="8dp" />
+
+            <Button
+                android:id="@+id/btnClearApp"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Limpiar"
+                android:textSize="12sp"
+                android:layout_marginStart="4dp"
+                android:background="#FFCDD2"
+                android:textColor="#C62828" />
+        </LinearLayout>
+
         <!-- === Seccion: Dispositivos === -->
         <TextView
             android:layout_width="match_parent"

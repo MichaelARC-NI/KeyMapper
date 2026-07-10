@@ -1,12 +1,11 @@
 package com.inputmapper.app
 
-import android.Manifest
 import android.content.Intent
+import android.content.pm.ResolveInfo
 import com.inputmapper.app.model.InputMode
 import com.inputmapper.app.model.KeyMapping
 import com.inputmapper.app.model.DeviceInfo
 import com.inputmapper.app.service.InputMapperService
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
@@ -36,6 +35,9 @@ class MainActivity : Activity() {
     private lateinit var btnConfigureKeys: Button
     private lateinit var btnConfigureAdb: Button
     private lateinit var tvAdbStatus: TextView
+    private lateinit var tvSelectedApp: TextView
+    private lateinit var btnSelectApp: Button
+    private lateinit var btnClearApp: Button
 
     private var selectedMode = InputMode.AUTO
     private var adbHost = ""
@@ -44,10 +46,12 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        InputMapperService.loadTargetApp(this)
         initViews()
         setupListeners()
         setupSocialButtons()
         updateUI()
+        updateAppSelectorUI()
         InputMapperService.onLogMessage = { message ->
             runOnUiThread { appendLog(message) }
         }
@@ -81,6 +85,9 @@ class MainActivity : Activity() {
         btnConfigureKeys = findViewById(R.id.btnConfigureKeys) as Button
         btnConfigureAdb = findViewById(R.id.btnConfigureAdb) as Button
         tvAdbStatus = findViewById(R.id.tvAdbStatus) as TextView
+        tvSelectedApp = findViewById(R.id.tvSelectedApp) as TextView
+        btnSelectApp = findViewById(R.id.btnSelectApp) as Button
+        btnClearApp = findViewById(R.id.btnClearApp) as Button
     }
 
     private fun setupListeners() {
@@ -99,6 +106,14 @@ class MainActivity : Activity() {
         }
 
         btnConfigureAdb.setOnClickListener { showAdbConnectDialog() }
+
+        btnSelectApp.setOnClickListener { showAppSelectorDialog() }
+
+        btnClearApp.setOnClickListener {
+            InputMapperService.clearTargetApp(this)
+            updateAppSelectorUI()
+            appendLog("App objetivo: Todas las apps")
+        }
 
         seekbarSensitivity.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -167,11 +182,88 @@ class MainActivity : Activity() {
         }
     }
 
+    // ==================== App Selector ====================
+
+    private fun showAppSelectorDialog() {
+        tvSelectedApp.text = "Cargando apps..."
+        btnSelectApp.isEnabled = false
+
+        Thread {
+            val apps = getInstalledLaunchableApps()
+            runOnUiThread {
+                btnSelectApp.isEnabled = true
+                if (apps.isEmpty()) {
+                    tvSelectedApp.text = "No se encontraron apps"
+                    return@runOnUiThread
+                }
+
+                val appNames = apps.map { it.label }.toTypedArray()
+                val currentTarget = InputMapperService.targetAppPackage
+
+                val checkedIndex = if (currentTarget.isNotEmpty()) {
+                    apps.indexOfFirst { it.packageName == currentTarget }
+                } else {
+                    -1
+                }
+
+                AlertDialog.Builder(this)
+                    .setTitle("Seleccionar App Objetivo")
+                    .setSingleChoiceItems(appNames, checkedIndex) { dialog, which ->
+                        val selected = apps[which]
+                        InputMapperService.saveTargetApp(this, selected.packageName, selected.label)
+                        updateAppSelectorUI()
+                        appendLog("App objetivo: " + selected.label)
+                        dialog.dismiss()
+                    }
+                    .setNeutralButton("Todas las apps") { _, _ ->
+                        InputMapperService.clearTargetApp(this)
+                        updateAppSelectorUI()
+                        appendLog("App objetivo: Todas las apps")
+                    }
+                    .setNegativeButton("Cancelar", null)
+                    .show()
+            }
+        }.start()
+    }
+
+    private fun getInstalledLaunchableApps(): List<AppInfo> {
+        val pm = packageManager
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_LAUNCHER)
+        val resolveInfos = pm.queryIntentActivities(intent, 0)
+
+        val apps = mutableListOf<AppInfo>()
+        for (ri in resolveInfos) {
+            val label = ri.loadLabel(pm).toString()
+            val pkg = ri.activityInfo.packageName
+            // Skip our own app
+            if (pkg == packageName) continue
+            apps.add(AppInfo(label, pkg, ri))
+        }
+        apps.sortBy { it.label.toLowerCase() }
+        return apps
+    }
+
+    data class AppInfo(val label: String, val packageName: String, val resolveInfo: ResolveInfo)
+
+    private fun updateAppSelectorUI() {
+        val pkg = InputMapperService.targetAppPackage
+        val name = InputMapperService.targetAppName
+        if (pkg.isNotEmpty() && name.isNotEmpty()) {
+            tvSelectedApp.text = name
+            tvSelectedApp.setTextColor(0xFF1565C0.toInt())
+            btnClearApp.visibility = View.VISIBLE
+        } else {
+            tvSelectedApp.text = "Todas las apps"
+            tvSelectedApp.setTextColor(0xFF757575.toInt())
+            btnClearApp.visibility = View.GONE
+        }
+    }
+
     // ==================== ADB Connection Dialog ====================
 
     private fun showAdbConnectDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_adb_connect, null)
-
         val etPairIp = dialogView.findViewById(R.id.etPairIp) as EditText
         val etPairPort = dialogView.findViewById(R.id.etPairPort) as EditText
         val etPairCode = dialogView.findViewById(R.id.etPairCode) as EditText
@@ -182,7 +274,6 @@ class MainActivity : Activity() {
         val btnConnect = dialogView.findViewById(R.id.btnConnect) as Button
         val tvResult = dialogView.findViewById(R.id.tvResult) as TextView
 
-        // Pre-fill with saved values
         if (adbHost.isNotEmpty()) {
             etPairIp.setText(adbHost)
             etConnectIp.setText(adbHost)
@@ -192,22 +283,18 @@ class MainActivity : Activity() {
             etConnectPort.setText(adbPort.toString())
         }
 
-        // Pair button
         btnPair.setOnClickListener {
             val ip = etPairIp.text.toString().trim()
             val port = etPairPort.text.toString().trim()
             val code = etPairCode.text.toString().trim()
-
             if (ip.isEmpty() || port.isEmpty() || code.isEmpty()) {
                 tvResult.setTextColor(0xFFF44336.toInt())
                 tvResult.text = "Completa IP, puerto y codigo"
                 return@setOnClickListener
             }
-
             tvResult.setTextColor(0xFF757575.toInt())
             tvResult.text = "Emparejando..."
             btnPair.isEnabled = false
-
             Thread {
                 try {
                     val cmd = "adb pair $ip:$port $code"
@@ -215,13 +302,11 @@ class MainActivity : Activity() {
                     val output = process.inputStream.bufferedReader().readText()
                     val errOutput = process.errorStream.bufferedReader().readText()
                     process.waitFor()
-
                     runOnUiThread {
                         btnPair.isEnabled = true
-                        if (output.contains("Successfully") || output.contains("exito") || output.contains("ok") || output.length < 5) {
+                        if (output.contains("Successfully") || output.contains("ok") || output.length < 5) {
                             tvResult.setTextColor(0xFF4CAF50.toInt())
-                            tvResult.text = "Emparejado OK!\nAhora usa el puerto de conexion para conectar."
-                            // Auto-fill connect fields
+                            tvResult.text = "Emparejado OK!"
                             etConnectIp.setText(ip)
                             etConnectPort.setText(port)
                             adbHost = ip
@@ -229,8 +314,7 @@ class MainActivity : Activity() {
                             tvPairStatus.text = "Emparejado con $ip:$port"
                         } else {
                             tvResult.setTextColor(0xFFF44336.toInt())
-                            val errMsg = if (errOutput.isNotEmpty()) errOutput else output
-                            tvResult.text = "Error: " + errMsg.trim().take(200)
+                            tvResult.text = "Error: " + (if (errOutput.isNotEmpty()) errOutput else output).trim().take(200)
                         }
                     }
                 } catch (e: Exception) {
@@ -243,28 +327,23 @@ class MainActivity : Activity() {
             }.start()
         }
 
-        // Connect button
         btnConnect.setOnClickListener {
             val ip = etConnectIp.text.toString().trim()
             val port = etConnectPort.text.toString().trim()
-
             if (ip.isEmpty() || port.isEmpty()) {
                 tvResult.setTextColor(0xFFF44336.toInt())
                 tvResult.text = "Completa IP y puerto"
                 return@setOnClickListener
             }
-
             tvResult.setTextColor(0xFF757575.toInt())
             tvResult.text = "Conectando a $ip:$port..."
             btnConnect.isEnabled = false
-
             Thread {
                 try {
                     val cmd = "adb connect $ip:$port"
                     val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", cmd))
                     val output = process.inputStream.bufferedReader().readText()
                     process.waitFor()
-
                     runOnUiThread {
                         btnConnect.isEnabled = true
                         if (output.contains("connected") || output.contains("already")) {
@@ -401,6 +480,9 @@ class MainActivity : Activity() {
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (InputMapperService.isRunning && event.action == KeyEvent.ACTION_DOWN) {
+            if (!InputMapperService.isTargetAppActive()) {
+                return super.dispatchKeyEvent(event)
+            }
             val mapping = InputMapperService.keyMappings.find { it.sourceKeyCode == event.keyCode && it.enabled }
             if (mapping != null) {
                 appendLog("Key: " + mapping.sourceKeyName + " -> " + mapping.targetKeyName)
@@ -411,6 +493,9 @@ class MainActivity : Activity() {
 
     override fun dispatchGenericMotionEvent(event: MotionEvent): Boolean {
         if (InputMapperService.isRunning && event.actionMasked == MotionEvent.ACTION_MOVE) {
+            if (!InputMapperService.isTargetAppActive()) {
+                return super.dispatchGenericMotionEvent(event)
+            }
             appendLog("Mouse move")
             return true
         }
