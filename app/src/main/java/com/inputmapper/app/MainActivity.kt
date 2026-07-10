@@ -6,6 +6,8 @@ import com.inputmapper.app.model.InputMode
 import com.inputmapper.app.model.KeyMapping
 import com.inputmapper.app.model.DeviceInfo
 import com.inputmapper.app.service.InputMapperService
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
@@ -182,6 +184,33 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun showHeadsUpNotification(title: String, text: String, bigText: String) {
+        try {
+            val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            val intent = Intent(this, MainActivity::class.java)
+            val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+            @Suppress("DEPRECATION")
+            val builder = android.app.Notification.Builder(this)
+
+            val notification = builder
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentTitle(title)
+                .setContentText(text)
+                .setStyle(android.app.Notification.BigTextStyle().bigText(bigText))
+                .setPriority(android.app.Notification.PRIORITY_HIGH)
+                .setDefaults(android.app.Notification.DEFAULT_ALL)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setFullScreenIntent(pendingIntent, true)
+                .build()
+
+            nm.notify(System.currentTimeMillis().toInt(), notification)
+        } catch (e: Exception) {
+            appendLog("Error mostrando notificacion")
+        }
+    }
+
     // ==================== App Selector ====================
 
     private fun showAppSelectorDialog() {
@@ -293,8 +322,13 @@ class MainActivity : Activity() {
                 return@setOnClickListener
             }
             tvResult.setTextColor(0xFF757575.toInt())
-            tvResult.text = "Emparejando..."
+            tvResult.text = "Emparejando $ip:$port..."
             btnPair.isEnabled = false
+            showHeadsUpNotification(
+                "Emparejando ADB",
+                "IP: $ip  Puerto: $port  Codigo: $code",
+                "Enviando comando: adb pair $ip:$port\nCodigo: $code\n\nNo cierres esta pantalla hasta ver el resultado."
+            )
             Thread {
                 try {
                     val cmd = "adb pair $ip:$port $code"
@@ -312,6 +346,11 @@ class MainActivity : Activity() {
                             adbHost = ip
                             adbPort = port.toIntOrNull() ?: 0
                             tvPairStatus.text = "Emparejado con $ip:$port"
+                            showHeadsUpNotification(
+                                "ADB Emparejado!",
+                                "Puerto: $port",
+                                "Conexion ADB emparejada con $ip:$port\nAhora toca CONECTAR para iniciar la sesion."
+                            )
                         } else {
                             tvResult.setTextColor(0xFFF44336.toInt())
                             tvResult.text = "Error: " + (if (errOutput.isNotEmpty()) errOutput else output).trim().take(200)
@@ -355,6 +394,11 @@ class MainActivity : Activity() {
                             InputMapperService.adbPort = adbPort
                             updateAdbStatusText()
                             appendLog("ADB conectado: $ip:$port")
+                            showHeadsUpNotification(
+                                "ADB Conectado!",
+                                "Sesion activa: $ip:$port",
+                                "Depuracion inalambrica conectada exitosamente.\nAhora puedes usar teclado y raton."
+                            )
                         } else {
                             tvResult.setTextColor(0xFFF44336.toInt())
                             tvResult.text = "Error: " + output.trim().take(200)
