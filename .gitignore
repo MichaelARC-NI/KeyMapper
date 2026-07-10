@@ -9,7 +9,6 @@
 .cxx
 local.properties
 /app/build/
-*.apk
 *.aab
 build_manual/
 settings.gradle.kts
