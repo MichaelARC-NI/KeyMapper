@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#1565C0</color>
+    <color name="primary_dark">#0D47A1</color>
+    <color name="accent">#FF6D00</color>
+    <color name="background">#F5F5F5</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="on_background">#212121</color>
+    <color name="status_running">#4CAF50</color>
+    <color name="status_stopped">#F44336</color>
+    <color name="key_mapped">#E3F2FD</color>
+    <color name="key_unmapped">#FFF3E0</color>
+</resources>

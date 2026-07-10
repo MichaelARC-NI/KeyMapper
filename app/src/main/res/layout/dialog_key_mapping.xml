@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Selecciona las teclas a mapear:"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp" />
+
+    <CheckBox android:id="@+id/cbHome" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="Home → Home" android:checked="true" android:padding="4dp" />
+    <CheckBox android:id="@+id/cbBack" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="Backspace → Back" android:checked="true" android:padding="4dp" />
+    <CheckBox android:id="@+id/cbVolUp" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="Volume Up → Vol+" android:checked="true" android:padding="4dp" />
+    <CheckBox android:id="@+id/cbVolDown" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="Volume Down → Vol-" android:checked="true" android:padding="4dp" />
+    <CheckBox android:id="@+id/cbTab" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="Tab → Tab" android:checked="false" android:padding="4dp" />
+    <CheckBox android:id="@+id/cbEnter" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="Enter → Enter" android:checked="true" android:padding="4dp" />
+    <CheckBox android:id="@+id/cbEscape" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="Escape → Back" android:checked="true" android:padding="4dp" />
+    <CheckBox android:id="@+id/cbSpace" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="Space → Tap centro pantalla" android:checked="false" android:padding="4dp" />
+    <CheckBox android:id="@+id/cbF1" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="F1 → Home" android:checked="false" android:padding="4dp" />
+    <CheckBox android:id="@+id/cbF2" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="F2 → Back" android:checked="false" android:padding="4dp" />
+    <CheckBox android:id="@+id/cbF3" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:text="F3 → Recent Apps" android:checked="false" android:padding="4dp" />
+</LinearLayout>

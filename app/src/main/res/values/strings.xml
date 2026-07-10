@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">KeyMapper</string>
+    <string name="title_keyboard_mouse_mapper">Teclado y Ratón Mapper</string>
+    <string name="btn_start_service">Iniciar Servicio</string>
+    <string name="btn_stop_service">Detener Servicio</string>
+    <string name="btn_configure_keys">Configurar Teclas</string>
+    <string name="btn_test_input">Probar Input</string>
+    <string name="mode_root">Modo Root</string>
+    <string name="mode_shizuku">Modo Shizuku</string>
+    <string name="mode_adb">Depuración Inalámbrica (ADB)</string>
+    <string name="mode_auto">Detección Automática</string>
+    <string name="status_running">Servicio activo</string>
+    <string name="status_stopped">Servicio detenido</string>
+    <string name="status_no_permission">Sin permisos suficientes</string>
+    <string name="connected_devices">Dispositivos Conectados</string>
+    <string name="key_mappings">Mapeo de Teclas</string>
+    <string name="touch_screen_area">Área de pantalla táctil</string>
+    <string name="sensitivity_label">Sensibilidad del ratón</string>
+    <string name="tap_action">Acción: Tocar en posición</string>
+    <string name="swipe_action">Acción: Deslizar</string>
+    <string name="scroll_action">Acción: Scroll</string>
+    <string name="key_injection_method">Método de inyección</string>
+    <string name="select_all">Seleccionar todo</string>
+    <string name="deselect_all">Deseleccionar todo</string>
+    <string name="notification_channel_name">KeyMapper Service</string>
+    <string name="notification_title">KeyMapper activo</string>
+    <string name="notification_text">Mapeando teclado y ratón</string>
+</resources>
