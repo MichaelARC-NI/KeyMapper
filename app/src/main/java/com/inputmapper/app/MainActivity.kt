@@ -7,7 +7,7 @@ import com.inputmapper.app.model.KeyMapping
 import com.inputmapper.app.model.DeviceInfo
 import com.inputmapper.app.service.InputMapperService
 import android.content.pm.PackageManager
-import android.os.Build
+import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -34,17 +34,20 @@ class MainActivity : Activity() {
     private lateinit var btnStart: Button
     private lateinit var btnStop: Button
     private lateinit var btnConfigureKeys: Button
+    private lateinit var btnConfigureAdb: Button
+    private lateinit var tvAdbStatus: TextView
 
     private var selectedMode = InputMode.AUTO
+    private var adbHost = ""
+    private var adbPort = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         initViews()
         setupListeners()
+        setupSocialButtons()
         updateUI()
-
         InputMapperService.onLogMessage = { message ->
             runOnUiThread { appendLog(message) }
         }
@@ -76,6 +79,8 @@ class MainActivity : Activity() {
         btnStart = findViewById(R.id.btnStart) as Button
         btnStop = findViewById(R.id.btnStop) as Button
         btnConfigureKeys = findViewById(R.id.btnConfigureKeys) as Button
+        btnConfigureAdb = findViewById(R.id.btnConfigureAdb) as Button
+        tvAdbStatus = findViewById(R.id.tvAdbStatus) as TextView
     }
 
     private fun setupListeners() {
@@ -87,13 +92,18 @@ class MainActivity : Activity() {
                 else -> InputMode.AUTO
             }
             InputMapperService.currentMode = selectedMode
+            btnConfigureAdb.visibility = if (selectedMode == InputMode.ADB) View.VISIBLE else View.GONE
+            tvAdbStatus.visibility = if (selectedMode == InputMode.ADB) View.VISIBLE else View.GONE
+            updateAdbStatusText()
             appendLog("Modo: " + selectedMode.displayName)
         }
+
+        btnConfigureAdb.setOnClickListener { showAdbConnectDialog() }
 
         seekbarSensitivity.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 val sensitivity = progress / 50f
-                tvSensitivityValue.text = "Sensibilidad: " + progress + "%"
+                tvSensitivityValue.text = progress.toString() + "%"
                 InputMapperService.mouseConfig = InputMapperService.mouseConfig.copy(sensitivity = sensitivity)
             }
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
@@ -115,6 +125,10 @@ class MainActivity : Activity() {
 
         btnStart.setOnClickListener {
             InputMapperService.currentMode = selectedMode
+            if (selectedMode == InputMode.ADB && adbHost.isNotEmpty() && adbPort > 0) {
+                InputMapperService.adbHost = adbHost
+                InputMapperService.adbPort = adbPort
+            }
             val intent = Intent(this, InputMapperService::class.java)
             startService(intent)
             appendLog("Servicio iniciado")
@@ -130,6 +144,172 @@ class MainActivity : Activity() {
         btnConfigureKeys.setOnClickListener { showKeyMappingDialog() }
     }
 
+    private fun setupSocialButtons() {
+        findViewById(R.id.btnFacebook).setOnClickListener {
+            openUrl("https://www.facebook.com/share/1EhxmtiyQN/")
+        }
+        findViewById(R.id.btnWhatsapp).setOnClickListener {
+            openUrl("https://wa.me/50583341349")
+        }
+        findViewById(R.id.btnTelegram).setOnClickListener {
+            openUrl("https://t.me/Michael_Antonio_Rodriguez")
+        }
+        findViewById(R.id.btnYoutube).setOnClickListener {
+            openUrl("https://youtube.com/@androidmovil")
+        }
+    }
+
+    private fun openUrl(url: String) {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        } catch (e: Exception) {
+            appendLog("Error abriendo URL")
+        }
+    }
+
+    // ==================== ADB Connection Dialog ====================
+
+    private fun showAdbConnectDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_adb_connect, null)
+
+        val etPairIp = dialogView.findViewById(R.id.etPairIp) as EditText
+        val etPairPort = dialogView.findViewById(R.id.etPairPort) as EditText
+        val etPairCode = dialogView.findViewById(R.id.etPairCode) as EditText
+        val btnPair = dialogView.findViewById(R.id.btnPair) as Button
+        val tvPairStatus = dialogView.findViewById(R.id.tvPairStatus) as TextView
+        val etConnectIp = dialogView.findViewById(R.id.etConnectIp) as EditText
+        val etConnectPort = dialogView.findViewById(R.id.etConnectPort) as EditText
+        val btnConnect = dialogView.findViewById(R.id.btnConnect) as Button
+        val tvResult = dialogView.findViewById(R.id.tvResult) as TextView
+
+        // Pre-fill with saved values
+        if (adbHost.isNotEmpty()) {
+            etPairIp.setText(adbHost)
+            etConnectIp.setText(adbHost)
+        }
+        if (adbPort > 0) {
+            etPairPort.setText(adbPort.toString())
+            etConnectPort.setText(adbPort.toString())
+        }
+
+        // Pair button
+        btnPair.setOnClickListener {
+            val ip = etPairIp.text.toString().trim()
+            val port = etPairPort.text.toString().trim()
+            val code = etPairCode.text.toString().trim()
+
+            if (ip.isEmpty() || port.isEmpty() || code.isEmpty()) {
+                tvResult.setTextColor(0xFFF44336.toInt())
+                tvResult.text = "Completa IP, puerto y codigo"
+                return@setOnClickListener
+            }
+
+            tvResult.setTextColor(0xFF757575.toInt())
+            tvResult.text = "Emparejando..."
+            btnPair.isEnabled = false
+
+            Thread {
+                try {
+                    val cmd = "adb pair $ip:$port $code"
+                    val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", cmd))
+                    val output = process.inputStream.bufferedReader().readText()
+                    val errOutput = process.errorStream.bufferedReader().readText()
+                    process.waitFor()
+
+                    runOnUiThread {
+                        btnPair.isEnabled = true
+                        if (output.contains("Successfully") || output.contains("exito") || output.contains("ok") || output.length < 5) {
+                            tvResult.setTextColor(0xFF4CAF50.toInt())
+                            tvResult.text = "Emparejado OK!\nAhora usa el puerto de conexion para conectar."
+                            // Auto-fill connect fields
+                            etConnectIp.setText(ip)
+                            etConnectPort.setText(port)
+                            adbHost = ip
+                            adbPort = port.toIntOrNull() ?: 0
+                            tvPairStatus.text = "Emparejado con $ip:$port"
+                        } else {
+                            tvResult.setTextColor(0xFFF44336.toInt())
+                            val errMsg = if (errOutput.isNotEmpty()) errOutput else output
+                            tvResult.text = "Error: " + errMsg.trim().take(200)
+                        }
+                    }
+                } catch (e: Exception) {
+                    runOnUiThread {
+                        btnPair.isEnabled = true
+                        tvResult.setTextColor(0xFFF44336.toInt())
+                        tvResult.text = "Error: " + e.message
+                    }
+                }
+            }.start()
+        }
+
+        // Connect button
+        btnConnect.setOnClickListener {
+            val ip = etConnectIp.text.toString().trim()
+            val port = etConnectPort.text.toString().trim()
+
+            if (ip.isEmpty() || port.isEmpty()) {
+                tvResult.setTextColor(0xFFF44336.toInt())
+                tvResult.text = "Completa IP y puerto"
+                return@setOnClickListener
+            }
+
+            tvResult.setTextColor(0xFF757575.toInt())
+            tvResult.text = "Conectando a $ip:$port..."
+            btnConnect.isEnabled = false
+
+            Thread {
+                try {
+                    val cmd = "adb connect $ip:$port"
+                    val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", cmd))
+                    val output = process.inputStream.bufferedReader().readText()
+                    process.waitFor()
+
+                    runOnUiThread {
+                        btnConnect.isEnabled = true
+                        if (output.contains("connected") || output.contains("already")) {
+                            tvResult.setTextColor(0xFF4CAF50.toInt())
+                            tvResult.text = "Conectado a $ip:$port"
+                            adbHost = ip
+                            adbPort = port.toIntOrNull() ?: 5555
+                            InputMapperService.adbHost = adbHost
+                            InputMapperService.adbPort = adbPort
+                            updateAdbStatusText()
+                            appendLog("ADB conectado: $ip:$port")
+                        } else {
+                            tvResult.setTextColor(0xFFF44336.toInt())
+                            tvResult.text = "Error: " + output.trim().take(200)
+                        }
+                    }
+                } catch (e: Exception) {
+                    runOnUiThread {
+                        btnConnect.isEnabled = true
+                        tvResult.setTextColor(0xFFF44336.toInt())
+                        tvResult.text = "Error: " + e.message
+                    }
+                }
+            }.start()
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Conexion ADB Inalambrica")
+            .setView(dialogView)
+            .setPositiveButton("Cerrar", null)
+            .show()
+    }
+
+    private fun updateAdbStatusText() {
+        if (adbHost.isNotEmpty() && adbPort > 0) {
+            tvAdbStatus.text = "Conectado: $adbHost:$adbPort"
+            tvAdbStatus.setTextColor(0xFF4CAF50.toInt())
+        } else {
+            tvAdbStatus.text = "Sin conexion ADB"
+            tvAdbStatus.setTextColor(0xFFF44336.toInt())
+        }
+    }
+
+    // ==================== Key Mapping Dialog ====================
+
     private fun showKeyMappingDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_key_mapping, null)
         AlertDialog.Builder(this)
@@ -137,7 +317,6 @@ class MainActivity : Activity() {
             .setView(dialogView)
             .setPositiveButton("Guardar") { _, _ ->
                 val mappings = mutableListOf<KeyMapping>()
-
                 val cbHome = dialogView.findViewById(R.id.cbHome) as CheckBox
                 val cbBack = dialogView.findViewById(R.id.cbBack) as CheckBox
                 val cbVolUp = dialogView.findViewById(R.id.cbVolUp) as CheckBox
@@ -145,7 +324,6 @@ class MainActivity : Activity() {
                 val cbTab = dialogView.findViewById(R.id.cbTab) as CheckBox
                 val cbEnter = dialogView.findViewById(R.id.cbEnter) as CheckBox
                 val cbEscape = dialogView.findViewById(R.id.cbEscape) as CheckBox
-                val cbSpace = dialogView.findViewById(R.id.cbSpace) as CheckBox
                 val cbF1 = dialogView.findViewById(R.id.cbF1) as CheckBox
                 val cbF2 = dialogView.findViewById(R.id.cbF2) as CheckBox
                 val cbF3 = dialogView.findViewById(R.id.cbF3) as CheckBox
@@ -173,11 +351,11 @@ class MainActivity : Activity() {
     private fun updateKeyMapStatus() {
         val active = InputMapperService.keyMappings.filter { it.enabled }
         val names = active.joinToString(", ") { it.sourceKeyName + "->" + it.targetKeyName }
-        tvKeyMapStatus.text = "Teclas: $names"
+        tvKeyMapStatus.text = names
     }
 
     private fun scanInputDevices() {
-        tvDevices.text = "Buscando dispositivos via /proc/bus/input/devices..."
+        tvDevices.text = "Buscando dispositivos..."
         Thread {
             try {
                 val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", "cat /proc/bus/input/devices"))
@@ -193,7 +371,7 @@ class MainActivity : Activity() {
                     }
                 }
                 runOnUiThread {
-                    tvDevices.text = if (devices.isEmpty()) "No hay dispositivos externos" 
+                    tvDevices.text = if (devices.isEmpty()) "No hay dispositivos externos"
                     else devices.joinToString("\n") { "  * " + it }
                 }
             } catch (e: Exception) {
@@ -203,7 +381,8 @@ class MainActivity : Activity() {
     }
 
     private fun updateDeviceList(devices: List<DeviceInfo>) {
-        tvDevices.text = if (devices.isEmpty()) "No hay dispositivos detectados" else devices.joinToString("\n") { "  * " + it.name + " [" + it.type + "]" }
+        tvDevices.text = if (devices.isEmpty()) "No hay dispositivos detectados"
+        else devices.joinToString("\n") { "  * " + it.name + " [" + it.type + "]" }
     }
 
     private fun updateUI() {

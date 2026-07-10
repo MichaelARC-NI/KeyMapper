@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Paso 1: Emparejar -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Paso 1: Emparejar Dispositivo"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="#1565C0" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Abre Ajustes > Desarrollador > Depuracion inalambrica > Emparejar dispositivo"
+        android:textSize="11sp"
+        android:textColor="#757575"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/etPairIp"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:hint="IP del dispositivo (ej: 192.168.1.7)"
+        android:inputType="text"
+        android:textSize="14sp"
+        android:padding="8dp"
+        android:background="#FFFFFF"
+        android:singleLine="true" />
+
+    <EditText
+        android:id="@+id/etPairPort"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:hint="Puerto de emparejamiento (ej: 46673)"
+        android:inputType="number"
+        android:textSize="14sp"
+        android:padding="8dp"
+        android:layout_marginTop="6dp"
+        android:background="#FFFFFF"
+        android:singleLine="true" />
+
+    <EditText
+        android:id="@+id/etPairCode"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:hint="Codigo de emparejamiento (6 digitos)"
+        android:inputType="number"
+        android:textSize="14sp"
+        android:padding="8dp"
+        android:layout_marginTop="6dp"
+        android:background="#FFFFFF"
+        android:singleLine="true" />
+
+    <Button
+        android:id="@+id/btnPair"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="EMPREJAR"
+        android:textSize="13sp"
+        android:layout_marginTop="8dp"
+        android:background="#1565C0"
+        android:textColor="#FFFFFF" />
+
+    <!-- Paso 2: Conectar -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#CCCCCC"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Paso 2: Conectar"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="#4CAF50" />
+
+    <TextView
+        android:id="@+id/tvPairStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Despues de emparejar, la IP y puerto se llenan automaticamente"
+        android:textSize="11sp"
+        android:textColor="#757575"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/etConnectIp"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="2"
+            android:hint="IP"
+            android:inputType="text"
+            android:textSize="14sp"
+            android:padding="8dp"
+            android:background="#FFFFFF"
+            android:singleLine="true" />
+
+        <EditText
+            android:id="@+id/etConnectPort"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:hint="Puerto"
+            android:inputType="number"
+            android:textSize="14sp"
+            android:padding="8dp"
+            android:layout_marginStart="6dp"
+            android:background="#FFFFFF"
+            android:singleLine="true" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnConnect"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="CONECTAR"
+        android:textSize="13sp"
+        android:layout_marginTop="8dp"
+        android:background="#4CAF50"
+        android:textColor="#FFFFFF" />
+
+    <!-- Resultado -->
+    <TextView
+        android:id="@+id/tvResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="12sp"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>

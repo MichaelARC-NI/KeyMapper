@@ -34,6 +34,8 @@ class InputMapperService : Service() {
         @JvmStatic var keyMappings = getDefaultKeyMappings()
         @JvmStatic var onLogMessage: ((String) -> Unit)? = null
         @JvmStatic var onDevicesChanged: ((List<DeviceInfo>) -> Unit)? = null
+        @JvmStatic var adbHost = ""
+        @JvmStatic var adbPort = 0
 
         private fun getDefaultKeyMappings(): MutableList<KeyMapping> {
             return mutableListOf(
@@ -65,10 +67,8 @@ class InputMapperService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground(NOTIFICATION_ID, buildNotification())
         log("Modo: " + currentMode.displayName)
-
         initializeInjector()
         discoverDevices()
-
         return START_STICKY
     }
 
@@ -83,10 +83,13 @@ class InputMapperService : Service() {
             InputMode.AUTO -> injector = detectBestInjector()
             InputMode.ROOT -> injector = RootInjector()
             InputMode.SHIZUKU -> injector = ShizukuInjector()
-            InputMode.ADB -> injector = AdbInjector()
+            InputMode.ADB -> {
+                val host = if (adbHost.isNotEmpty()) adbHost else "127.0.0.1"
+                val port = if (adbPort > 0) adbPort else 5555
+                injector = AdbInjector(host, port)
+            }
             else -> injector = RootInjector()
         }
-
         if (injector?.isAvailable != true) {
             log("ADVERTENCIA: " + currentMode.displayName + " no disponible")
         } else {
@@ -97,13 +100,10 @@ class InputMapperService : Service() {
     private fun detectBestInjector(): InputInjector {
         val root = RootInjector()
         if (root.isAvailable) { log("Root detectado"); return root }
-
         val shizuku = ShizukuInjector()
         if (shizuku.isAvailable) { log("Shizuku detectado"); return shizuku }
-
         val adb = AdbInjector()
         if (adb.isAvailable) { log("ADB detectado"); return adb }
-
         log("Sin metodo de inyeccion disponible")
         return root
     }
