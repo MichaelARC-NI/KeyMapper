@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="#F5F5F5">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,336 +10,237 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Header -->
-        <com.google.android.material.card.MaterialCardView
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
-            android:layout_marginBottom="12dp">
+            android:text="KeyMapper - Teclado y Ratón"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#1565C0" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/title_keyboard_mouse_mapper"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/primary" />
-
-                <TextView
-                    android:id="@+id/tvStatus"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/status_stopped"
-                    android:textSize="14sp"
-                    android:layout_marginTop="4dp"
-                    android:textColor="@color/status_stopped" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Mode Selection -->
-        <com.google.android.material.card.MaterialCardView
+        <TextView
+            android:id="@+id/tvStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            android:layout_marginBottom="12dp">
+            android:text="Servicio detenido"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"
+            android:textColor="#F44336" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/key_injection_method"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/on_background" />
-
-                <RadioGroup
-                    android:id="@+id/rgMode"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp">
-
-                    <RadioButton
-                        android:id="@+id/rbAuto"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/mode_auto"
-                        android:checked="true"
-                        android:padding="8dp" />
-
-                    <RadioButton
-                        android:id="@+id/rbRoot"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/mode_root"
-                        android:padding="8dp" />
-
-                    <RadioButton
-                        android:id="@+id/rbShizuku"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/mode_shizuku"
-                        android:padding="8dp" />
-
-                    <RadioButton
-                        android:id="@+id/rbAdb"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/mode_adb"
-                        android:padding="8dp" />
-                </RadioGroup>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Connected Devices -->
-        <com.google.android.material.card.MaterialCardView
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            android:layout_marginBottom="12dp">
+            android:text="Método de inyección"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/connected_devices"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/on_background" />
-
-                <TextView
-                    android:id="@+id/tvDevices"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="No hay dispositivos conectados"
-                    android:textSize="13sp"
-                    android:layout_marginTop="8dp"
-                    android:textColor="#757575" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Mouse Settings -->
-        <com.google.android.material.card.MaterialCardView
+        <RadioGroup
+            android:id="@+id/rgMode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            android:layout_marginBottom="12dp">
+            android:layout_marginTop="8dp">
 
-            <LinearLayout
+            <RadioButton
+                android:id="@+id/rbAuto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:text="Detección Automática"
+                android:checked="true"
+                android:padding="8dp" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Configuración del Ratón"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/on_background" />
+            <RadioButton
+                android:id="@+id/rbRoot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Modo Root"
+                android:padding="8dp" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/sensitivity_label"
-                    android:textSize="14sp"
-                    android:layout_marginTop="8dp" />
+            <RadioButton
+                android:id="@+id/rbShizuku"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Modo Shizuku"
+                android:padding="8dp" />
 
-                <SeekBar
-                    android:id="@+id/seekbarSensitivity"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:max="100"
-                    android:progress="50"
-                    android:layout_marginTop="4dp" />
+            <RadioButton
+                android:id="@+id/rbAdb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Depuración Inalámbrica (ADB)"
+                android:padding="8dp" />
+        </RadioGroup>
 
-                <TextView
-                    android:id="@+id/tvSensitivityValue"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Sensibilidad: 50%"
-                    android:textSize="12sp"
-                    android:gravity="end" />
-
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/switchInvertY"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Invertir eje Y"
-                    android:layout_marginTop="8dp" />
-
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/switchLeftClick"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Click izquierdo = Tocar"
-                    android:checked="true"
-                    android:layout_marginTop="4dp" />
-
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/switchRightClick"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Click derecho = Volver"
-                    android:checked="true"
-                    android:layout_marginTop="4dp" />
-
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/switchScroll"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Scroll del ratón = Scroll pantalla"
-                    android:checked="true"
-                    android:layout_marginTop="4dp" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Keyboard Mapping -->
-        <com.google.android.material.card.MaterialCardView
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            android:layout_marginBottom="12dp">
+            android:text="Dispositivos Conectados"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+        <TextView
+            android:id="@+id/tvDevices"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No hay dispositivos conectados"
+            android:textSize="13sp"
+            android:layout_marginTop="8dp"
+            android:textColor="#757575" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/key_mappings"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/on_background" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Configuración del Ratón"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center_vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sensibilidad del ratón"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp" />
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switchKeyMapEnabled"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Mapeo de teclado activo"
-                        android:checked="true" />
+        <SeekBar
+            android:id="@+id/seekbarSensitivity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:progress="50"
+            android:layout_marginTop="4dp" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnConfigureKeys"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/btn_configure_keys" />
-                </LinearLayout>
+        <TextView
+            android:id="@+id/tvSensitivityValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sensibilidad: 50%"
+            android:textSize="12sp"
+            android:gravity="end" />
 
-                <TextView
-                    android:id="@+id/tvKeyMapStatus"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Teclas mapeadas: Home, Back, Volume+, Volume-"
-                    android:textSize="12sp"
-                    android:layout_marginTop="4dp"
-                    android:textColor="#757575" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        <CheckBox
+            android:id="@+id/switchInvertY"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Invertir eje Y"
+            android:layout_marginTop="8dp" />
 
-        <!-- Control Buttons -->
+        <CheckBox
+            android:id="@+id/switchLeftClick"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Click izquierdo = Tocar"
+            android:checked="true"
+            android:layout_marginTop="4dp" />
+
+        <CheckBox
+            android:id="@+id/switchRightClick"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Click derecho = Volver"
+            android:checked="true"
+            android:layout_marginTop="4dp" />
+
+        <CheckBox
+            android:id="@+id/switchScroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Scroll del ratón = Scroll pantalla"
+            android:checked="true"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mapeo de Teclas"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnStart"
+            <CheckBox
+                android:id="@+id/switchKeyMapEnabled"
                 android:layout_width="0dp"
-                android:layout_height="56dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/btn_start_service"
-                android:layout_marginEnd="8dp"
-                app:cornerRadius="12dp"
-                app:backgroundTint="@color/status_running" />
+                android:text="Mapeo activo"
+                android:checked="true" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnStop"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_weight="1"
-                android:text="@string/btn_stop_service"
-                android:layout_marginStart="8dp"
-                app:cornerRadius="12dp"
-                app:backgroundTint="@color/status_stopped" />
+            <Button
+                android:id="@+id/btnConfigureKeys"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Configurar" />
         </LinearLayout>
 
-        <!-- Log -->
-        <com.google.android.material.card.MaterialCardView
+        <TextView
+            android:id="@+id/tvKeyMapStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
+            android:text="Teclas mapeadas: Home, Back, Volume+, Volume-"
+            android:textSize="12sp"
+            android:layout_marginTop="4dp"
+            android:textColor="#757575" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp">
 
-            <LinearLayout
+            <Button
+                android:id="@+id/btnStart"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:text="Iniciar"
+                android:layout_marginEnd="8dp"
+                android:background="#4CAF50"
+                android:textColor="#FFFFFF" />
+
+            <Button
+                android:id="@+id/btnStop"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:text="Detener"
+                android:layout_marginStart="8dp"
+                android:background="#F44336"
+                android:textColor="#FFFFFF" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Registro de actividad"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <ScrollView
+            android:id="@+id/svLog"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginTop="8dp"
+            android:background="#F0F0F0"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/tvLog"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Registro de actividad"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/on_background" />
-
-                <ScrollView
-                    android:id="@+id/svLog"
-                    android:layout_width="match_parent"
-                    android:layout_height="150dp"
-                    android:layout_marginTop="8dp"
-                    android:background="#F0F0F0"
-                    android:padding="8dp">
-
-                    <TextView
-                        android:id="@+id/tvLog"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Esperando eventos...
-"
-                        android:textSize="11sp"
-                        android:fontFamily="monospace"
-                        android:textColor="#333333" />
-                </ScrollView>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                android:text="Esperando eventos..."
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:textColor="#333333" />
+        </ScrollView>
 
     </LinearLayout>
 </ScrollView>

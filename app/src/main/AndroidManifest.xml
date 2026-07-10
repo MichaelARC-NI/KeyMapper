@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest package="com.inputmapper.app" xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -36,23 +36,16 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-            </intent-filter>
-            <meta-data
-                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-                android:resource="@xml/device_filter" />
+
+
         </activity>
 
         <service
             android:name=".service.InputMapperService"
             android:exported="false"
-            android:foregroundServiceType="specialUse" />
+            />
 
-        <service
-            android:name=".shizuku.ShizukuInputService"
-            android:exported="true"
-            android:permission="rikka.shizuku.permission.API" />
+
 
         <receiver
             android:name=".receiver.BootReceiver"
@@ -62,11 +55,6 @@
             </intent-filter>
         </receiver>
 
-        <provider
-            android:name="rikka.shizuku.ShizukuProvider"
-            android:authorities="${applicationId}.shizuku"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="rikka.shizuku.permission.API" />
+
     </application>
 </manifest>

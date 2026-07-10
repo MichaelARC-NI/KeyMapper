@@ -54,7 +54,7 @@ object DeviceDiscovery {
     }
 
     private fun classifyDevice(name: String): DeviceType {
-        val lowerName = name.lowercase()
+        val lowerName = name.toLowerCase()
         return when {
             mouseKeywords.any { lowerName.contains(it) } -> DeviceType.MOUSE
             keyboardKeywords.any { lowerName.contains(it) } -> DeviceType.KEYBOARD
